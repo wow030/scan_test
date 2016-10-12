@@ -1,56 +1,28 @@
-#include<stdio.h>
-#include<string.h>
-#include<pthread.h>
-#include<stdlib.h>
-#include<unistd.h>
+// thread01.c
+#include <pthread.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-pthread_t tid[2];
-int counter;
-pthread_mutex_t lock;
+#define N 5
 
-void* doSomeThing(void *arg)
+void *worker_thread(void *arg)
 {
-        pthread_mutex_lock(&lock);
-
-        unsigned long i = 0;
-
-        printf("\n Job %d started\n", counter);
-
-        counter++;
-        printf( "\n Job %d add count\n", counter );
-        printf("\n Job %d finished\n", counter);
-
-        pthread_mutex_unlock(&lock);
-
-        return NULL;
-
+        printf("This is worker_thread #%ld\n", (long)arg);
+        pthread_exit(NULL);
 }
 
-int main(void)
+int main()
 {
-        int i = 0;
-        int err;
+        pthread_t my_thread[N];
 
-        if (pthread_mutex_init(&lock, NULL) != 0)
-    {
-                printf("\n mutex init failed\n");
-                return 1;
-            
-    }
+        long id;
+        for(id = 1; id <= N; id++) {
+                int ret =  pthread_create(&my;_thread[id], NULL, &worker;_thread, (void*)id);
+                if(ret != 0) {
+                        printf("Error: pthread_create() failed\n");
+                        exit(EXIT_FAILURE);
+                }
+        }
 
-        while(i < 2)
-    {
-                err = pthread_create(&(tid[i]), NULL, &doSomeThing, NULL);
-                if (err != 0)
-                    printf("\ncan't create thread :[%s]", strerror(err));
-                i++;
-            
-    }
-
-        pthread_join(tid[0], NULL);
-        pthread_join(tid[1], NULL);
-        pthread_mutex_destroy(&lock);
-    printf( "counter: %d\n", counter  );
-    return 0;
-
+        pthread_exit(NULL);
 }
